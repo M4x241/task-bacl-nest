@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { User } from './user.entity';
+import { push, ref, set } from 'firebase/database';
+// import { Repository } from 'typeorm';
+import { firebaseDataBase } from 'src/firebase.config';
 // import { IsNotEmpty, IsString, IsEmail, IsOptional } from 'class-validator';
 
 export interface typeuser {
@@ -10,38 +15,28 @@ export interface typeuser {
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      name: 'asdf',
-      email: 'asfa',
-      password: 'asfd',
-    },
-    {
-      id: 2,
-      name: 'asdfas',
-      email: 'asdf',
-      password: 'asdf',
-    },
-  ];
-  addUser(user: any): typeuser {
-    this.users.push(user);
-    console.log('anadienod');
-    return user;
+  async createData(data: any): Promise<void> {
+    const dataRef = ref(firebaseDataBase, 'Data');
+    const newElementRef = push(dataRef, { dataRef: data });
+    await set(newElementRef, data);
+    console.log('Se creo exitosamente');
+  }
+  async addUser() {
+    return 'hola';
   }
 
-  delUser(num: any) {
-    this.users = this.users.filter((item) => item.id != num);
+  delUser() {
+    // this.users = this.users.filter((item) => item.id != num);
     return 'Borrado';
   }
 
   getAllUser() {
-    return this.users;
+    return 'hop;';
   }
 
-  putUser(user: typeuser, index: number) {
+  putUser() {
     // ya se realiza la verificacion en el controller
-    this.users[index] = user;
+    // this.users[index] = user;
     return 'axtualizado';
   }
 }
