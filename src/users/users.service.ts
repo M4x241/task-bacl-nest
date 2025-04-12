@@ -1,42 +1,49 @@
 import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { User } from './user.entity';
-import { push, ref, set } from 'firebase/database';
-// import { Repository } from 'typeorm';
-import { firebaseDataBase } from 'src/firebase.config';
-// import { IsNotEmpty, IsString, IsEmail, IsOptional } from 'class-validator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
 
 export interface typeuser {
-  id: number;
   name: string;
+  username: string;
   email: string;
   password: string;
 }
 
 @Injectable()
 export class UsersService {
-  async createData(data: any): Promise<void> {
-    const dataRef = ref(firebaseDataBase, 'Data');
-    const newElementRef = push(dataRef, { dataRef: data });
-    await set(newElementRef, data);
-    console.log('Se creo exitosamente');
+  constructor(
+    @InjectRepository(User) private readonly userRepositorio: Repository<User>,
+  ) {}
+
+  async createUser(data: typeuser): Promise<void> {
+    const newUser = this.userRepositorio.create({
+      name: data.name,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    });
+    newUser.createdAt = new Date();
+    await this.userRepositorio.insert(newUser);
+    console.log('Se agrego correctamente');
   }
-  async addUser() {
-    return 'hola';
+  async updateUser(id: number, user: any) {
+    await this.userRepositorio.update(id, user);
+    console.log('Actualizado');
   }
 
-  delUser() {
-    // this.users = this.users.filter((item) => item.id != num);
-    return 'Borrado';
+  async delUser(id: number) {
+    await this.userRepositorio.delete(id);
+    console.log('delete User');
   }
 
-  getAllUser() {
-    return 'hop;';
+  async getAllUser() {
+    console.log('revisando todos');
+    return await this.userRepositorio.find();
   }
 
-  putUser() {
-    // ya se realiza la verificacion en el controller
-    // this.users[index] = user;
-    return 'axtualizado';
+  async getUser(id: number) {
+    console.log('revisando user');
+    return await this.userRepositorio.findOne({ where: { id } });
   }
 }

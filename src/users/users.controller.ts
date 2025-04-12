@@ -1,57 +1,43 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { typeuser, UsersService } from './users.service';
-import { stringify } from 'querystring';
 
 @Controller('users')
 export class UsersController {
-  // aqui se puede implementar el constructor
-  // constructor(private userService: UsersService) {}
   constructor(private readonly userService: UsersService) {}
 
-  @Post('createData')
-  async createData(@Body() data: any): Promise<void> {
-    const datos = {
-      nombre: stringify,
-      edad: Number,
-    };
-    await this.userService.createData(data);
-    console.log(datos);
-  }
   @Post()
-  addUser(@Body() user: typeuser) {
-    console.log(user);
-    console.log('entrando');
-    // return this.userService.addUser(user);
-    return 'hola';
+  async createData(@Body() data: any): Promise<void> {
+    this.userService.createUser(data);
+    console.log(data);
   }
 
   @Delete()
-  delUser() {
-    // return this.userService.delUser(id);
-    return 'hola';
+  delUser(@Query('id') id: number): any {
+    return this.userService.delUser(id);
   }
 
   @Put()
-  updateUser() {
-    // const userscopy = this.userService.getAllUser();
-    // const index = userscopy.findIndex((item) => item.id === user.id);
-    if (25 * 5 !== -1) {
-      // return this.userService.putUser(user, index);
-      return 'hola';
-    } else {
-      // return 'error de codigo';
-      return 'hola';
-    }
+  updateUser(@Body() serviceModel: typeuser, @Query('id') id: number): any {
+    return this.userService.updateUser(id, serviceModel);
+  }
+
+  @Get(':id')
+  getUser(@Param() params) {
+    console.log('revisando');
+    return this.userService.getUser(params.id);
   }
 
   @Get()
   getAllUser() {
-    // return this.userService.getAllUser();
-    return 'hola';
+    return this.userService.getAllUser();
   }
-
-  //   @Get(':id')
-  //   getUser(Param('id'), id = any ){
-  //     return f("retornando userespecifico ${id}")
-  //   }
 }
